@@ -1,1 +1,0 @@
-web: gunicorn --chdir trello run:app
