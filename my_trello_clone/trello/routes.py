@@ -15,7 +15,7 @@ def get_user_id_from_token():
     token = request.headers.get('Authorization')
     
     if not token:
-        return {'error': 'Authorization header is missing'}, 400
+        return {'error': 'Authorization header is missing', 'status_code': 400}
 
     token = token.split(' ')[1] if ' ' in token else token
     secret_key = "your_secret_key"
@@ -24,19 +24,19 @@ def get_user_id_from_token():
         decoded = jwt.decode(token, secret_key, algorithms=["HS256"])
         user_id = decoded.get('user_id')
         if not user_id:
-            return {'error': 'User ID is missing from token payload'}, 400
+            return {'error': 'User ID is missing from token payload', 'status_code': 400}
         return user_id
     except jwt.ExpiredSignatureError:
-        return {'error': 'Token has expired'}, 401
+        return {'error': 'Token has expired', 'status_code': 401}
     except jwt.InvalidTokenError:
-        return {'error': 'Invalid token'}, 403
-    
+        return {'error': 'Invalid token', 'status_code': 403}
+
 # Funcion para obtener el user_id de la API de usuarios
 def get_user_id_from_api():
     token = request.headers.get('Authorization')
 
     if not token:
-        return None, {'error': 'Authorization header is missing'}, 400
+        return None, {'error': 'Authorization header is missing', 'status_code': 400}
 
     token = token.split(' ')[1] if ' ' in token else token
 
@@ -51,13 +51,13 @@ def get_user_id_from_api():
     response = requests.get(user_api_url, headers=headers)
 
     if response.status_code != 200:
-        return None, {'error': 'Unauthorized, invalid or expired token'}, 401
+        return None, {'error': 'Unauthorized, invalid or expired token', 'status_code': 401}
 
     user_info = response.json()
     user_id = user_info.get('id')
 
     if not user_id:
-        return None, {'error': 'User ID is missing from user API response'}, 400
+        return None, {'error': 'User ID is missing from user API response', 'status_code': 400}
 
     return user_id, None  # Retorna el user_id y None si no hay errores
 
